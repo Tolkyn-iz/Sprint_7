@@ -1,34 +1,40 @@
+import allure
 import pytest
-import requests
-from helpers import register_new_courier_and_return_login_password, create_order_and_return_track
-
-BASE_URL = 'https://qa-scooter.praktikum-services.ru'
-
-
-@pytest.fixture
-def create_courier_and_delete():
-    """Фикстура создаёт курьера, возвращает его данные и удаляет после теста"""
-    login, password, first_name = register_new_courier_and_return_login_password()
-    payload = {"login": login, "password": password}
-    yield login, password, first_name
-
-    # Удаляем курьера после теста
-    response = requests.post(f'{BASE_URL}/api/v1/courier/login', data=payload)
-    if response.status_code == 200:
-        courier_id = response.json().get('id')
-        if courier_id:
-            requests.delete(f'{BASE_URL}/api/v1/courier/{courier_id}')
+from courier_api import CourierApi
+from order_api import OrderApi
+from config import generate_random_string
+from data import ORDER_DATA_BLACK
 
 
 @pytest.fixture
-def create_order():
-    """Фикстура создаёт заказ и возвращает его track номер"""
-    track = create_order_and_return_track()
-    yield track
+@allure.step("Фикстура: создание и удаление курьера")
+def courier_fixture():
+    login = generate_random_string(10)
+    password = generate_random_string(10)
+    first_name = generate_random_string(10)
+    
+    payload = {
+        "login": login,
+        "password": password,
+        "firstName": first_name
+    }
+    
+    create_response = CourierApi.create_courier(payload)
+    if create_response.status_code != 201:
+        pytest.skip("Не удалось создать курьера для теста")
+    
+    # Возвращаем значения, а не generator
+    return login, password, first_name
 
-    # Отмена заказа после теста (опционально, если API поддерживает)
-    if track:
-        try:
-            requests.put(f'{BASE_URL}/api/v1/orders/cancel', params={'track': track})
-        except:
-            pass
+
+@pytest.fixture
+@allure.step("Фикстура: создание и отмена заказа")
+def order_fixture():
+    order_data = ORDER_DATA_BLACK.copy()
+    response = OrderApi.create_order(order_data)
+    
+    if response.status_code != 201:
+        pytest.skip("Не удалось создать заказ для теста")
+    
+    track = response.json().get('track')
+    return track

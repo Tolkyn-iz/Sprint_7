@@ -1,3 +1,5 @@
+from config import ERROR_MESSAGES
+
 # Тестовые данные для заказов
 ORDER_DATA_BLACK = {
     "firstName": "Иван",
@@ -45,4 +47,11 @@ ORDER_DATA_NO_COLOR = {
     "deliveryDate": "2025-01-25",
     "comment": "Без цвета",
     "color": []
+}
+
+# Тестовые данные для курьеров
+VALID_COURIER_DATA = {
+    "login": "valid_login",
+    "password": "valid_password",
+    "firstName": "Valid Name"
 }

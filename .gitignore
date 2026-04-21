@@ -1,9 +1,15 @@
+# Python
 __pycache__/
 *.pyc
-.idea/
-.vscode/
-allure_results/
-allure_report/
 .pytest_cache/
 venv/
 env/
+.idea/
+.vscode/
+
+# Allure
+allure_results/
+
+# Логи
+*.log
+.DS_Store
