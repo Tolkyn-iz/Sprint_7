@@ -27,4 +27,3 @@ Sprint_7/
 ├── data.py # Тестовые данные
 ├── requirements.txt # Зависимости
 ├── .gitignore # Исключения для Git
-└── README.md # Описание проекта
